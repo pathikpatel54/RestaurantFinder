@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"restaurantfinder/config"
+	"restaurantfinder/database"
 	"restaurantfinder/routes"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +15,13 @@ func init() {
 
 func main() {
 	router := gin.New()
-	ac := routes.NewAuthController()
-	router.GET()
+	db, ctx := database.GetMongoDB()
+	ac := routes.NewAuthController(ctx, db)
+
+	router.POST("/api/signup", ac.SignUp)
+	router.POST("/api/login", ac.Login)
+	router.GET("/api/user", ac.User)
+	router.GET("/api/logout", ac.Logout)
+
+	router.Run(":" + config.Keys.PORT)
 }
