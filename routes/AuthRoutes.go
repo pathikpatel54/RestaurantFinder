@@ -44,6 +44,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.String(http.StatusBadRequest, "")
+		return
 	}
 
 	result := ac.db.Collection("users").FindOne(ac.ctx, bson.M{"username": user.Username})
@@ -51,6 +52,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	if result.Err() != nil {
 		log.Println(result.Err().Error())
 		c.String(http.StatusNotFound, "")
+		return
 	}
 
 	var foundUser models.User
@@ -60,6 +62,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.String(http.StatusUnauthorized, "")
+		return
 	}
 
 	generateSession(&foundUser, c, ac)
@@ -74,12 +77,12 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.String(http.StatusBadRequest, "")
+		return
 	}
 
 	result := ac.db.Collection("users").FindOne(ac.ctx, bson.M{"username": user.Username})
 
 	if result.Err() == nil {
-		log.Println(result.Err().Error())
 		c.String(http.StatusConflict, "user with email %s already exists", user.Username)
 		return
 	}
@@ -88,6 +91,7 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		c.String(http.StatusInternalServerError, "")
+		return
 	}
 
 	user.Password = string(hashedPassword)
@@ -95,10 +99,14 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 	result = ac.db.Collection("users").FindOneAndUpdate(context.Background(), bson.M{"username": user.Username}, bson.M{"$setOnInsert": user}, options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After))
 	if result.Err() != nil {
 		log.Println(result.Err().Error())
+		c.String(http.StatusInternalServerError, "")
+		return
 	}
 	insertedUser := models.User{}
 	if err := result.Decode(&insertedUser); err != nil {
 		log.Println(err.Error())
+		c.String(http.StatusInternalServerError, "")
+		return
 	}
 	generateSession(&insertedUser, c, ac)
 	insertedUser.Password = ""

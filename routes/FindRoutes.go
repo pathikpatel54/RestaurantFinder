@@ -10,7 +10,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lesismal/nbio/nbhttp/websocket"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type FindController struct {
@@ -23,6 +25,32 @@ func NewFindController(ctx context.Context, db *mongo.Database) *FindController 
 		ctx: ctx,
 		db:  db,
 	}
+}
+
+func (fc *FindController) AddCompanion(c *gin.Context) {
+	var companion models.Companion
+	json.NewDecoder(c.Request.Body).Decode(&companion)
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"username1": companion.Username1},
+			{"username2": companion.Username2},
+		},
+	}
+	update := bson.M{
+		"$set": companion,
+	}
+	opts := options.Update().SetUpsert(true)
+
+	_, err := fc.db.Collection("companions").UpdateOne(fc.ctx, filter, update, opts)
+
+	if err != nil {
+		log.Println(err)
+		c.String(http.StatusInternalServerError, "")
+		return
+	}
+
+	c.String(http.StatusOK, "")
 }
 
 func newUpgrader(user *models.User, nc *FindController) *websocket.Upgrader {

@@ -24,6 +24,7 @@ func main() {
 	router.GET("/api/user", ac.User)
 	router.GET("/api/logout", ac.Logout)
 
+	router.POST("/api/companion", fc.AddCompanion)
 	router.GET("/api/socket", fc.FindWebSocket)
 
 	router.Run(":" + config.Keys.PORT)
