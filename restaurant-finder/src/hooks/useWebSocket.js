@@ -11,6 +11,7 @@ const useWebSocket = (path = "/") => {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.websocket.status);
   const messages = useSelector((state) => state.websocket.messages);
+  const ws = useSelector((state) => state.websocket.connection);
 
   useEffect(() => {
     if (status === "disconnected") {
@@ -40,6 +41,20 @@ const useWebSocket = (path = "/") => {
       };
     }
   }, [status, dispatch, path]);
+
+  useEffect(() => {
+    if (status === "connected") {
+      const pingInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "ping" }));
+        }
+      }, 5000);
+
+      return () => {
+        clearInterval(pingInterval);
+      };
+    }
+  }, [status, dispatch, ws]);
 
   useEffect(() => {
     return () => {
