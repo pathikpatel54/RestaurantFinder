@@ -192,7 +192,9 @@ const Landing = () => {
   useEffect(() => {
     try {
       const lastMessage = JSON.parse(messages?.slice(-1)[0]);
-      setMessage(lastMessage);
+      if (lastMessage?.type !== "pong") {
+        setMessage(lastMessage);
+      }
       if (lastMessage?.type === "disconnected") {
         setWaiting(true);
       } else if (lastMessage?.type === "presence") {
@@ -365,8 +367,11 @@ const Landing = () => {
                 ? "Waiting for your companion to complete seletcting their preferences."
                 : "These are the restaurants sorted according to both the preferences."}
             </Text>
-            <Cards data={waiting ? [] : message?.restaurants} />
-            <Skeleton visible={waiting} height={50} circle mb="xl"></Skeleton>
+            <Cards data={message.restaurants} />
+            <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
+            <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
+            <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
+            <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
           </Stepper.Step>
           <Stepper.Completed></Stepper.Completed>
         </Stepper>

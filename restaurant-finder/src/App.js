@@ -10,11 +10,15 @@ import { fetchAuth, selectAllAuth } from "./features/auth/authSlice";
 import Landing from "./component/Landing";
 import Preferences from "./component/Preferences";
 import AddressInput from "./component/Test";
+import { fetchFavorites } from "./features/favorites/favoriteSlice";
+import Favorites from "./component/Favorites";
+import { Notifications } from "@mantine/notifications";
 
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchAuth());
+    dispatch(fetchFavorites());
   }, []);
   const user = useSelector(selectAllAuth);
 
@@ -26,16 +30,16 @@ function App() {
       withGlobalStyles
       withNormalizeCSS
     >
+      <Notifications />
+
       <div className="background">
         <BrowserRouter>
           <HeaderMegaMenu />
-
           <Routes>
             <Route path="/" element={user.username ? <Landing /> : <Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/preferences" element={<Preferences />} />
-            <Route path="/test" element={<AddressInput />} />
+            <Route path="/favorites" element={<Favorites />} />
           </Routes>
         </BrowserRouter>
       </div>

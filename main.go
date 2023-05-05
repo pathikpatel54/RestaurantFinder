@@ -30,6 +30,8 @@ func main() {
 	router.GET("/api/companion", fc.GetCompanion)
 	router.POST("/api/companion", fc.AddCompanion)
 	router.GET("/api/socket", fc.FindWebSocket)
+	router.GET("/api/favorites", fc.GetFavorites)
+	router.POST("/api/favorites", fc.SaveFavorite)
 	router.GET("/api/cuisines", yc.GetCuisines)
 
 	router.Static("/static", "./restaurant-finder/build/static")

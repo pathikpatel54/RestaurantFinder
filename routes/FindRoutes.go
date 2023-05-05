@@ -305,3 +305,69 @@ func findBestMatch(restaurants []models.Restaurant, user1, user2 models.UserPref
 
 	return restaurants
 }
+
+func (fc *FindController) SaveFavorite(c *gin.Context) {
+	logged, user := isLoggedIn(c, fc.db, fc.ctx)
+
+	if !logged {
+		c.String(http.StatusUnauthorized, "")
+		return
+	}
+
+	var favourite models.Favourite
+	json.NewDecoder(c.Request.Body).Decode(&favourite)
+
+	favourite.UserID = user.Username
+	favourite.Created = time.Now()
+
+	result, err := fc.db.Collection("favourites").InsertOne(fc.ctx, favourite)
+	if err != nil {
+		log.Println(err.Error())
+		c.String(http.StatusInternalServerError, "")
+		return
+	}
+
+	// Get the inserted ID from the result
+	insertedID := result.InsertedID
+
+	// Retrieve the saved document using the inserted ID
+	var savedFavourite models.Favourite
+	err = fc.db.Collection("favourites").FindOne(fc.ctx, bson.M{"_id": insertedID}).Decode(&savedFavourite)
+	if err != nil {
+		log.Println(err.Error())
+		c.String(http.StatusInternalServerError, "")
+		return
+	}
+
+	c.JSON(http.StatusOK, savedFavourite)
+}
+
+func (fc *FindController) GetFavorites(c *gin.Context) {
+
+	logged, user := isLoggedIn(c, fc.db, fc.ctx)
+
+	if !logged {
+		c.String(http.StatusUnauthorized, "")
+		return
+	}
+
+	filter := bson.M{"username": user.Username}
+	cursor, err := fc.db.Collection("favourites").Find(fc.ctx, filter)
+
+	if err != nil {
+		log.Println(err.Error())
+		c.String(http.StatusInternalServerError, "")
+		return
+	}
+
+	var favourites []models.Favourite
+	err = cursor.All(fc.ctx, &favourites)
+
+	if err != nil {
+		log.Println(err.Error())
+		c.String(http.StatusInternalServerError, "")
+		return
+	}
+
+	c.JSON(http.StatusOK, favourites)
+}

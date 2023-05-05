@@ -61,7 +61,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 	err = bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(user.Password))
 	if err != nil {
 		log.Println(err.Error())
-		c.String(http.StatusUnauthorized, "")
+		c.String(http.StatusForbidden, "")
 		return
 	}
 

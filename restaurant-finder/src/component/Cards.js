@@ -12,6 +12,8 @@ import {
   rem,
 } from "@mantine/core";
 import { IconHeart, IconShare } from "@tabler/icons-react";
+import { useDispatch } from "react-redux";
+import { saveFavorite } from "../features/favorites/favoriteSlice";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -39,6 +41,15 @@ const useStyles = createStyles((theme) => ({
 
 export default function Cards({ data }) {
   const { classes, theme } = useStyles();
+  const dispatch = useDispatch();
+
+  const handleLikeClick = (restaurant) => {
+    dispatch(
+      saveFavorite({
+        restaurant: restaurant,
+      })
+    );
+  };
 
   const cards = data?.map((article) => (
     <Card key={article?.name} p="md" radius="md" className={classes.card}>
@@ -69,7 +80,7 @@ export default function Cards({ data }) {
               : `Within ${article?.distance} mile`}
           </Text>
           <Group spacing={0}>
-            <ActionIcon>
+            <ActionIcon onClick={() => handleLikeClick(article)}>
               <IconHeart
                 size="1.2rem"
                 color={theme.colors.red[6]}

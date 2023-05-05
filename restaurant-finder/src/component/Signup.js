@@ -9,18 +9,27 @@ import {
   Container,
   Group,
   Button,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { postSignUp, selectAllAuth } from "../features/auth/authSlice";
+import {
+  getAuthError,
+  getAuthStatus,
+  postSignUp,
+  selectAllAuth,
+} from "../features/auth/authSlice";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { notifications } from "@mantine/notifications";
 
 const SignUp = () => {
   const dispatch = useDispatch();
   const auth = useSelector(selectAllAuth);
   const navigate = useNavigate();
+  const error = useSelector(getAuthError);
+  const status = useSelector(getAuthStatus);
 
   const form = useForm({
     initialValues: { name: "", username: "", password: "" },
@@ -45,6 +54,16 @@ const SignUp = () => {
     }
   }, [auth]);
 
+  useEffect(() => {
+    if (error === "Request failed with status code 409") {
+      notifications.clean();
+      notifications.show({
+        title: "Authentication failed",
+        message: "User already exist",
+      });
+    }
+  }, [status]);
+
   return (
     <Container size={420} my={40}>
       <Title
@@ -63,7 +82,12 @@ const SignUp = () => {
         </Anchor>
       </Text>
       <Paper withBorder shadow="xl" p={30} mt={30} radius="md">
-        <form onSubmit={form.onSubmit(SignUpFormSubmit)}>
+        <form
+          onSubmit={form.onSubmit(SignUpFormSubmit)}
+          style={{ position: "relative" }}
+        >
+          <LoadingOverlay visible={status === "pending"} overlayBlur={2} />
+
           <TextInput
             label="Name"
             placeholder="Your Name"

@@ -9,12 +9,16 @@ import {
   Container,
   Group,
   Button,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDispatch, useSelector } from "react-redux";
 import { postLogin, selectAllAuth } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { getAuthError } from "../features/auth/authSlice";
+import { getAuthStatus } from "../features/auth/authSlice";
+import { notifications } from "@mantine/notifications";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -22,6 +26,9 @@ const Login = () => {
     dispatch(postLogin(values));
   };
   const auth = useSelector(selectAllAuth);
+  const error = useSelector(getAuthError);
+  const status = useSelector(getAuthStatus);
+
   const navigate = useNavigate();
 
   const form = useForm({
@@ -34,6 +41,22 @@ const Login = () => {
         value.length < 6 ? "Password must have at least 6 letters" : null,
     },
   });
+
+  useEffect(() => {
+    if (error === "Request failed with status code 404") {
+      notifications.clean();
+      notifications.show({
+        title: "Authentication failed",
+        message: "User does not exist",
+      });
+    } else if (error === "Request failed with status code 403") {
+      notifications.clean();
+      notifications.show({
+        title: "Authentication failed",
+        message: "Username or Password is incorrect",
+      });
+    }
+  }, [status]);
 
   useEffect(() => {
     if (auth.username) {
@@ -60,7 +83,11 @@ const Login = () => {
       </Text>
 
       <Paper withBorder shadow="xl" p={30} mt={30} radius="md">
-        <form onSubmit={form.onSubmit(LoginFormSubmit)}>
+        <form
+          onSubmit={form.onSubmit(LoginFormSubmit)}
+          style={{ position: "relative" }}
+        >
+          <LoadingOverlay visible={status === "pending"} overlayBlur={2} />
           <TextInput
             label="Email"
             placeholder="you@mantine.dev"

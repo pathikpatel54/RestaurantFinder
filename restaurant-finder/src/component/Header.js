@@ -136,8 +136,7 @@ const useStyles = createStyles((theme) => ({
 
 const links = [
   { link: "/", label: "Home" },
-  { link: "/favorites", label: "Favorite Restaurants" },
-  { link: "/preferences", label: "Preferences" },
+  { link: "/favorites", label: "Favorites" },
 ];
 
 export default function HeaderResponsive() {
@@ -215,13 +214,6 @@ export default function HeaderResponsive() {
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
-                icon={<IconSettings size="0.9rem" stroke={1.5} />}
-                component={Link}
-                to="/preferences"
-              >
-                Preferences
-              </Menu.Item>
-              <Menu.Item
                 color="red"
                 icon={<IconLogout size="0.9rem" stroke={1.5} />}
                 component="a"
@@ -292,13 +284,6 @@ export default function HeaderResponsive() {
                       </UnstyledButton>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      <Menu.Item
-                        icon={<IconLogout size="0.9rem" stroke={1.5} />}
-                        component={Link}
-                        to="/preferences"
-                      >
-                        Preferences
-                      </Menu.Item>
                       <Menu.Item
                         color="red"
                         icon={<IconLogout size="0.9rem" stroke={1.5} />}
