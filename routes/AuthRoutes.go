@@ -129,7 +129,7 @@ func (ac *AuthController) Logout(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("session", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session", "", -1, "/", c.Request.Host, false, true)
 	c.Redirect(http.StatusSeeOther, "/")
 }
 
@@ -137,7 +137,7 @@ func generateSession(user *models.User, c *gin.Context, ac *AuthController) erro
 	sessionID, _ := utils.GenerateRandomString(20)
 
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("session", sessionID, (30 * 24 * 60 * 60), "/", "localhost", false, true)
+	c.SetCookie("session", sessionID, (30 * 24 * 60 * 60), "/", c.Request.Host, false, true)
 
 	_, err := ac.db.Collection("sessions").UpdateOne(ac.ctx, bson.D{{Key: "username", Value: user.Username}}, bson.M{
 		"$set": bson.M{
