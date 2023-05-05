@@ -7,11 +7,13 @@ import {
   addMessage,
 } from "../features/companion/websocketSlice";
 
+import { useRef } from "react";
+
 const useWebSocket = (path = "/") => {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.websocket.status);
   const messages = useSelector((state) => state.websocket.messages);
-  const ws = useSelector((state) => state.websocket.connection);
+  const wsRef = useRef(null);
 
   useEffect(() => {
     if (status === "disconnected") {
@@ -39,14 +41,16 @@ const useWebSocket = (path = "/") => {
         dispatch(setStatus("error"));
         dispatch(closeConnection());
       };
+
+      wsRef.current = ws;
     }
   }, [status, dispatch, path]);
 
   useEffect(() => {
-    if (status === "connected") {
+    if (status === "connected" && wsRef.current) {
       const pingInterval = setInterval(() => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: "ping" }));
+        if (wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({ type: "ping" }));
         }
       }, 5000);
 
@@ -54,7 +58,7 @@ const useWebSocket = (path = "/") => {
         clearInterval(pingInterval);
       };
     }
-  }, [status, dispatch, ws]);
+  }, [status, wsRef]);
 
   useEffect(() => {
     return () => {
