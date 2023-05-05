@@ -173,7 +173,7 @@ func isLoggedIn(c *gin.Context, db *mongo.Database, ctx context.Context) (bool, 
 	}
 
 	if session.Expires.Before(time.Now()) {
-		c.SetCookie("session", "", -1, "/", "localhost", false, true)
+		c.SetCookie("session", "", -1, "/", c.Request.Host, false, true)
 		db.Collection("sessions").DeleteMany(ctx, bson.D{{Key: "username", Value: session.Username}})
 		return false, &models.User{}
 	}
