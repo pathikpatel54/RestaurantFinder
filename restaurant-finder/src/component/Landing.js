@@ -159,7 +159,11 @@ const Landing = () => {
   };
 
   useEffect(() => {
-    if (active === 1 && message?.type !== "presence") {
+    if (
+      active === 1 &&
+      message?.type !== "presence" &&
+      message?.type !== "sortedRestaurants"
+    ) {
       sendMessageToServer({
         type: "subscribe",
         companionId: companion._id,
@@ -219,7 +223,7 @@ const Landing = () => {
           preferences. It's quick and easy!
         </Text>
         <Space h={30}></Space>
-        <Stepper active={active} onStepClick={setActive} breakpoint="sm">
+        <Stepper active={active} breakpoint="sm">
           <Stepper.Step label="First step" description="Enter your address">
             <Divider my="sm" />
             <Space h={10}></Space>
