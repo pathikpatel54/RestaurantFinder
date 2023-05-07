@@ -30,10 +30,12 @@ const authSlice = createSlice({
     builder
       .addCase(fetchAuth.pending, (state) => {
         state.status = "pending";
+        state.error = "";
       })
       .addCase(fetchAuth.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.user = action.payload;
+        state.error = "";
       })
       .addCase(fetchAuth.rejected, (state, action) => {
         state.status = "rejected";
@@ -41,10 +43,12 @@ const authSlice = createSlice({
       })
       .addCase(postLogin.pending, (state) => {
         state.status = "pending";
+        state.error = "";
       })
       .addCase(postLogin.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.user = action.payload;
+        state.error = "";
       })
       .addCase(postLogin.rejected, (state, action) => {
         state.status = "rejected";
@@ -52,10 +56,12 @@ const authSlice = createSlice({
       })
       .addCase(postSignUp.pending, (state) => {
         state.status = "pending";
+        state.error = "";
       })
       .addCase(postSignUp.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.user = action.payload;
+        state.error = "";
       })
       .addCase(postSignUp.rejected, (state, action) => {
         state.status = "rejected";
