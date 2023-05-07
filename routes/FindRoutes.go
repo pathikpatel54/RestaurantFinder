@@ -167,12 +167,6 @@ func newUpgrader(user *models.User, fc *FindController) *websocket.Upgrader {
 			fc.Lock()
 			defer fc.Unlock()
 
-			// Check if there's already a connection for the user
-			if existingConn, ok := fc.userConnections[user.Username]; ok {
-				// If there is, close the existing connection
-				existingConn.Close()
-			}
-
 			// Store the new connection in the map
 			fc.userConnections[user.Username] = c
 

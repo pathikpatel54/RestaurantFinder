@@ -164,11 +164,13 @@ const Landing = () => {
       message?.type !== "presence" &&
       message?.type !== "sortedRestaurants"
     ) {
-      sendMessageToServer({
-        type: "subscribe",
-        companionId: companion._id,
-      });
       setWaiting(true);
+      setTimeout(function () {
+        sendMessageToServer({
+          type: "subscribe",
+          companionId: companion._id,
+        });
+      }, 500);
     }
   }, [active]);
 
