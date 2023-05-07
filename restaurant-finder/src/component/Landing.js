@@ -161,7 +161,6 @@ const Landing = () => {
   useEffect(() => {
     if (active === 1) {
       setWaiting(true);
-
       sendMessageToServer({
         type: "subscribe",
         companionId: companion._id,
@@ -208,6 +207,12 @@ const Landing = () => {
     }
   }, [messages]);
 
+  const onStepperClick = (req) => {
+    if (req < active) {
+      setActive(req);
+    }
+  };
+
   return (
     <Container>
       <Paper shadow="xl" p="md" withBorder>
@@ -220,7 +225,7 @@ const Landing = () => {
           preferences. It's quick and easy!
         </Text>
         <Space h={30}></Space>
-        <Stepper active={active} breakpoint="sm">
+        <Stepper active={active} onStepClick={onStepperClick} breakpoint="sm">
           <Stepper.Step label="First step" description="Enter your address">
             <Divider my="sm" />
             <Space h={10}></Space>

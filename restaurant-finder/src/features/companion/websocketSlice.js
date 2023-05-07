@@ -35,11 +35,9 @@ export const closeConnection = () => (dispatch) => {
 
 export const sendMessage = async (message) => {
   while (ws === null) {
-    console.log(ws);
     // Wait for the WebSocket connection to be established
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  console.log(ws);
   ws.send(JSON.stringify(message));
 };
 

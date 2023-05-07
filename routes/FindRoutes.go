@@ -168,13 +168,11 @@ func newUpgrader(user *models.User, fc *FindController) *websocket.Upgrader {
 			defer fc.Unlock()
 
 			// Check if there's already a connection for the user
-			if existingConn, ok := fc.userConnections[user.Username]; ok {
+			if _, ok := fc.userConnections[user.Username]; !ok {
 				// If there is, close the existing connection
-				existingConn.Close()
+				// Store the new connection in the map
+				fc.userConnections[user.Username] = c
 			}
-
-			// Store the new connection in the map
-			fc.userConnections[user.Username] = c
 
 			companionID := message.CompanionID
 			if _, ok := fc.companionSubscriptions[companionID]; !ok {
@@ -244,7 +242,7 @@ func (fc *FindController) FindWebSocket(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	wsConn := conn.(*websocket.Conn)
 	wsConn.SetReadDeadline(time.Time{})
 
