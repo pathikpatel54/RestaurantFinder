@@ -51,8 +51,8 @@ export default function Cards({ data }) {
     );
   };
 
-  const cards = data?.map((article) => (
-    <Card key={article?.name} p="md" radius="md" className={classes.card}>
+  const cards = data?.map((article, i) => (
+    <Card key={i} p="md" radius="md" className={classes.card}>
       <AspectRatio ratio={1920 / 1080}>
         <Image src={article?.image_url} />
       </AspectRatio>

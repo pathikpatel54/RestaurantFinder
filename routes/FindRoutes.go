@@ -167,6 +167,12 @@ func newUpgrader(user *models.User, fc *FindController) *websocket.Upgrader {
 			fc.Lock()
 			defer fc.Unlock()
 
+			// Check if there's already a connection for the user
+			if existingConn, ok := fc.userConnections[user.Username]; ok {
+				// If there is, close the existing connection
+				existingConn.Close()
+			}
+
 			// Store the new connection in the map
 			fc.userConnections[user.Username] = c
 
@@ -192,10 +198,8 @@ func newUpgrader(user *models.User, fc *FindController) *websocket.Upgrader {
 
 	u.OnClose(func(c *websocket.Conn, err error) {
 		log.Println("OnClose:", c.RemoteAddr().String(), err)
-
 		fc.Lock()
 		defer fc.Unlock()
-
 		// Remove the connection from the user connections map
 		delete(fc.userConnections, user.Username)
 
@@ -240,6 +244,7 @@ func (fc *FindController) FindWebSocket(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	
 	wsConn := conn.(*websocket.Conn)
 	wsConn.SetReadDeadline(time.Time{})
 

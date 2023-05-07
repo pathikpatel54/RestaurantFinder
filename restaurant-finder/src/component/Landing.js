@@ -159,18 +159,13 @@ const Landing = () => {
   };
 
   useEffect(() => {
-    if (
-      active === 1 &&
-      message?.type !== "presence" &&
-      message?.type !== "sortedRestaurants"
-    ) {
+    if (active === 1) {
       setWaiting(true);
-      setTimeout(function () {
-        sendMessageToServer({
-          type: "subscribe",
-          companionId: companion._id,
-        });
-      }, 500);
+
+      sendMessageToServer({
+        type: "subscribe",
+        companionId: companion._id,
+      });
     }
   }, [active]);
 
@@ -373,7 +368,7 @@ const Landing = () => {
                 ? "Waiting for your companion to complete seletcting their preferences."
                 : "These are the restaurants sorted according to both the preferences."}
             </Text>
-            <Cards data={message.restaurants} />
+            {message.restaurants ? <Cards data={message.restaurants} /> : <></>}
             <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
             <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
             <Skeleton visible={waiting} height={50} mb="xl"></Skeleton>
