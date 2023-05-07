@@ -14,6 +14,7 @@ import {
 import { IconHeart, IconShare } from "@tabler/icons-react";
 import { useDispatch } from "react-redux";
 import { saveFavorite } from "../features/favorites/favoriteSlice";
+import { notifications } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -49,6 +50,10 @@ export default function Cards({ data }) {
         restaurant: restaurant,
       })
     );
+    notifications.show({
+      title: "Added to favorites",
+      message: `Restaurant ${restaurant?.name} has been added to favorites`,
+    });
   };
 
   const cards = data?.map((article, i) => (
